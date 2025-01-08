@@ -1,0 +1,27 @@
+<div id="<%= dom_id transaction %>">
+  <p>
+    <strong>Amount:</strong>
+    <%= number_with_precision(transaction.amount, precision: 2) %>
+  </p>
+
+  <p>
+    <strong>Type:</strong>
+    <%= transaction.transaction_type %>
+  </p>
+
+  <p>
+    <strong>Description:</strong>
+    <%= transaction.description %>
+  </p>
+
+  <p>
+    <strong>Category:</strong>
+    <%= transaction.category %>
+  </p>
+
+  <p>
+    <strong>Date:</strong>
+    <%= transaction.date %>
+  </p>
+
+</div>
