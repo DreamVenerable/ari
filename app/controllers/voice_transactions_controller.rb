@@ -62,10 +62,13 @@ class VoiceTransactionsController < ApplicationController
   end
 
   def infer_type(text)
-    expense = %w[spent bought paid purchase cost expense]
-    income  = %w[earned received income salary bonus refund gift]
-    return "Income" if income.any? { |w| text.include?(w) }
-    "Expense"
+    income = %w[earned received income salary bonus refund gift found gained]
+    expense = %w[spent bought paid purchase cost expense lost donated]
+    text_down = text.downcase
+
+    return "Income" if income.any? { |w| text_down.include?(w) }
+    return "Expense" if expense.any? { |w| text_down.include?(w) }
+    "Unknown"
   end
 
   def infer_category(text)

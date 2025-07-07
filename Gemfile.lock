@@ -108,14 +108,6 @@ GEM
     erubi (1.13.1)
     et-orbi (1.2.11)
       tzinfo
-    faraday (2.13.1)
-      faraday-net_http (>= 2.0, < 3.5)
-      json
-      logger
-    faraday-net_http (3.4.1)
-      net-http (>= 0.5.0)
-    faraday-retry (2.3.2)
-      faraday (~> 2.0)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -135,8 +127,6 @@ GEM
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
     json (2.9.1)
-    jwt (2.10.2)
-      base64
     kamal (2.4.0)
       activesupport (>= 7.0)
       base64 (~> 0.2)
@@ -163,9 +153,6 @@ GEM
     mini_mime (1.1.5)
     minitest (5.25.4)
     msgpack (1.7.5)
-    multi_json (1.15.0)
-    net-http (0.6.0)
-      uri
     net-imap (0.5.5)
       date
       net-protocol
@@ -194,7 +181,6 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.1-x86_64-linux-musl)
       racc (~> 1.4)
-    os (1.1.4)
     ostruct (0.6.1)
     parallel (1.26.3)
     parser (3.3.6.0)
@@ -295,11 +281,6 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    signet (0.20.0)
-      addressable (~> 2.8)
-      faraday (>= 0.17.5, < 3.a)
-      jwt (>= 1.5, < 3.0)
-      multi_json (~> 1.10)
     solid_cable (3.0.5)
       actioncable (>= 7.2)
       activejob (>= 7.2)
@@ -332,6 +313,15 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.1.2)
+    tailwindcss-rails (4.3.0)
+      railties (>= 7.0.0)
+      tailwindcss-ruby (~> 4.0)
+    tailwindcss-ruby (4.1.11)
+    tailwindcss-ruby (4.1.11-aarch64-linux-gnu)
+    tailwindcss-ruby (4.1.11-aarch64-linux-musl)
+    tailwindcss-ruby (4.1.11-arm64-darwin)
+    tailwindcss-ruby (4.1.11-x86_64-linux-gnu)
+    tailwindcss-ruby (4.1.11-x86_64-linux-musl)
     thor (1.3.2)
     thruster (0.1.10)
     thruster (0.1.10-aarch64-linux)
@@ -392,6 +382,7 @@ DEPENDENCIES
   solid_queue
   sqlite3 (>= 2.1)
   stimulus-rails
+  tailwindcss-rails (~> 4.3)
   thruster
   turbo-rails
   tzinfo-data
