@@ -1,0 +1,394 @@
+<% content_for :title, "Voice Transaction" %>
+
+<div class="voice-transaction-container">
+  <div class="header">
+    <h1>Add Transaction by Voice</h1>
+    <p>Speak your transaction details and we'll automatically categorize it for you.</p>
+  </div>
+
+  <div class="voice-interface">
+    <div class="recording-section">
+      <div class="microphone-container">
+        <button id="recordButton" class="record-btn" type="button">
+          <svg class="microphone-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 1C10.34 1 9 2.34 9 4V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V4C15 2.34 13.66 1 12 1Z" fill="currentColor"/>
+            <path d="M19 10V12C19 16.42 15.42 20 11 20H13C17.42 20 21 16.42 21 12V10H19Z" fill="currentColor"/>
+            <path d="M5 10V12C5 16.42 8.58 20 13 20H11C6.58 20 3 16.42 3 12V10H5Z" fill="currentColor"/>
+            <path d="M12 22V20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M8 22H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="record-text">Click to Record</span>
+        </button>
+      </div>
+      
+      <div class="recording-status" id="recordingStatus" style="display: none;">
+        <div class="pulse-animation"></div>
+        <span>Recording... Click to stop</span>
+      </div>
+      
+      <div class="audio-visualization" id="audioVisualization" style="display: none;">
+        <canvas id="visualizer" width="300" height="100"></canvas>
+      </div>
+    </div>
+
+    <div class="transcription-section" id="transcriptionSection" style="display: none;">
+      <h3>Transcription:</h3>
+      <div class="transcription-text" id="transcriptionText"></div>
+    </div>
+
+    <div class="transaction-preview" id="transactionPreview" style="display: none;">
+      <h3>Transaction Details:</h3>
+      <% if Current.user %>
+        <div class="preview-form">
+          <%= form_with model: @transaction, url: create_from_voice_voice_transactions_path, local: false, html: { id: "transactionForm" } do |form| %>
+            <div class="form-group">
+              <%= form.label :amount, "Amount ($)" %>
+              <%= form.number_field :amount, step: 0.01, class: "form-control", id: "previewAmount" %>
+            </div>
+            
+            <div class="form-group">
+              <%= form.label :transaction_type, "Type" %>
+              <%= form.select :transaction_type, 
+                  options_for_select([['Income', 'Income'], ['Expense', 'Expense']]), 
+                  { prompt: 'Select type' }, 
+                  { class: "form-control", id: "previewType" } %>
+            </div>
+            
+            <div class="form-group">
+              <%= form.label :category, "Category" %>
+              <%= form.text_field :category, class: "form-control", id: "previewCategory" %>
+            </div>
+            
+            <div class="form-group">
+              <%= form.label :description, "Description" %>
+              <%= form.text_area :description, rows: 3, class: "form-control", id: "previewDescription" %>
+            </div>
+            
+            <div class="form-group">
+              <%= form.label :date, "Date" %>
+              <%= form.date_field :date, value: Date.current, class: "form-control", id: "previewDate" %>
+            </div>
+            
+            <div class="form-actions">
+              <%= form.submit "Save Transaction", class: "btn btn-primary" %>
+              <button type="button" class="btn btn-secondary" id="editTransactionBtn">Edit Details</button>
+              <button type="button" class="btn btn-outline-secondary" id="recordAgainBtn">Record Again</button>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="login-required-message">
+          <p>You need to log in to save this transaction.</p>
+          <div class="form-actions">
+            <%= link_to "Log In", new_session_path, class: "btn btn-primary" %>
+            <button type="button" class="btn btn-outline-secondary" id="recordAgainBtn">Record Again</button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <h4>Tips for better recognition:</h4>
+    <ul>
+      <li>Speak clearly and at a normal pace</li>
+      <li>Include the amount: "I spent twenty five dollars"</li>
+      <li>Mention what it was for: "on groceries" or "for lunch"</li>
+      <li>Examples: "I spent $15 on coffee", "I earned $500 from freelancing"</li>
+    </ul>
+    
+    <div class="browser-support-info">
+      <h4>Browser Compatibility:</h4>
+      <p>This feature uses the Web Speech API which works best in Chrome, Edge, and Safari. Firefox has limited support.</p>
+      <p>If you experience issues, try using a different browser or check that your microphone permissions are enabled.</p>
+    </div>
+  </div>
+
+  <div class="alternative-options">
+    <p>Prefer manual entry? <%= link_to "Add transaction manually", new_transaction_path, class: "btn btn-outline-primary" %></p>
+  </div>
+</div>
+
+
+<style>
+.voice-transaction-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.header p {
+  color: #666;
+  font-size: 16px;
+}
+
+.voice-interface {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+.recording-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.microphone-container {
+  margin-bottom: 20px;
+}
+
+.record-btn {
+  background: #007bff;
+  border: none;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.record-btn:hover {
+  background: #0056b3;
+  transform: scale(1.05);
+}
+
+.record-btn.recording {
+  background: #dc3545;
+  animation: pulse 1.5s infinite;
+}
+
+.microphone-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.recording-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #dc3545;
+  font-weight: 500;
+}
+
+.pulse-animation {
+  width: 12px;
+  height: 12px;
+  background: #dc3545;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.audio-visualization {
+  margin-top: 20px;
+}
+
+#visualizer {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+}
+
+.transcription-section {
+  background: black;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 4px solid #28a745;
+}
+
+.transcription-text {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  padding: 15px;
+  background:rgb(0, 0, 0);
+  border-radius: 6px;
+  font-style: italic;
+}
+
+.transaction-preview {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  border-left: 4px solid #007bff;
+}
+
+.preview-form .form-group {
+  margin-bottom: 15px;
+}
+
+.preview-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+}
+
+.preview-form .form-control {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #0056b3;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+}
+
+.btn-outline-secondary {
+  background: transparent;
+  color: #6c757d;
+  border: 1px solid #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-outline-primary {
+  background: transparent;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.btn-outline-primary:hover {
+  background: #007bff;
+  color: white;
+}
+
+.help-section {
+  background: #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.help-section h4 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.help-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.help-section li {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.browser-support-info {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #ccc;
+}
+
+.browser-support-info p {
+  margin-bottom: 8px;
+  color: #555;
+  font-size: 14px;
+}
+
+.alternative-options {
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border-left: 4px solid #dc3545;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border-left: 4px solid #28a745;
+}
+
+.login-required-message {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.login-required-message p {
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #555;
+}
+</style>
+
+<%= javascript_include_tag "voice_transaction", defer: true %>

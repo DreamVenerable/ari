@@ -6,7 +6,75 @@
 
 <h1>Your Balance: <%= number_to_currency(Current.user.balance) %></h1>
 
-<%= link_to "New transaction", new_transaction_path %>
+<div class="transaction-actions">
+  <%= link_to "🎤 Add by Voice", new_voice_transaction_path, class: "btn btn-primary voice-btn" %>
+  <%= link_to "✏️ Add Manually", new_transaction_path, class: "btn btn-secondary" %>
+</div>
+
+<style>
+.transaction-actions {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+  transform: translateY(-1px);
+}
+
+.voice-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.voice-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.voice-btn:hover::before {
+  left: 100%;
+}
+</style>
 
 <div id="transactions">
   <% @transactions.each do |transaction| %>
