@@ -1,103 +1,111 @@
 <% content_for :title, "Voice Transaction" %>
 
-<div class="max-w-3xl mx-auto px-4 py-8">
-  <header class="mb-6 text-center">
-    <h1 class="text-3xl font-bold text-gray-800">Add Transaction by Voice</h1>
-    <p class="text-gray-500 mt-2">Speak your transaction, and we'll categorize it automatically.</p>
-  </header>
+<div data-controller="voice-recorder" class="min-w-screen min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 px-4 py-10">
+  <div class="max-w-2xl mx-auto space-y-8 animate-fade-in-up">
+    
+    <header class="text-center space-y-2">
+      <h1 class="text-4xl font-bold text-slate-800">🎤 Add Transaction by Voice</h1>
+      <p class="text-slate-600">Speak your transaction — we’ll fill it in for you.</p>
+    </header>
 
-  <section class="bg-white shadow-md rounded-lg p-6 space-y-6">
-    <div class="flex flex-col items-center space-y-4">
-      <button id="recordButton" type="button" class="flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">
-        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 1C10.34 1 9 2.34 9 4V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V4C15 2.34 13.66 1 12 1Z"/>
-          <path d="M19 10V12C19 16.42 15.42 20 11 20H13C17.42 20 21 16.42 21 12V10H19Z"/>
-          <path d="M5 10V12C5 16.42 8.58 20 13 20H11C6.58 20 3 16.42 3 12V10H5Z"/>
-          <path d="M12 22V20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M8 22H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <span class="font-medium">Click to Record</span>
-      </button>
+    <section class="bg-white shadow-lg rounded-xl p-6 space-y-6">
+      <div class="flex flex-col items-center space-y-4">
+        <button
+          type="button"
+          data-voice-recorder-target="recordButton"
+          data-action="click->voice-recorder#startOrStopRecording"
+          class="flex items-center space-x-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg shadow-md transition"
+        >
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 1C10.34 1 9 2.34 9 4V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V4C15 2.34 13.66 1 12 1Z"/>
+            <path d="M19 10V12C19 16.42 15.42 20 11 20H13C17.42 20 21 16.42 21 12V10H19Z"/>
+            <path d="M5 10V12C5 16.42 8.58 20 13 20H11C6.58 20 3 16.42 3 12V10H5Z"/>
+            <path d="M12 22V20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M8 22H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="font-semibold">Start Recording</span>
+        </button>
 
-      <div id="recordingStatus" class="hidden text-red-500 font-semibold">
-        <span class="animate-pulse">Recording... Click to stop</span>
+        <div data-voice-recorder-target="recordingStatus" class="hidden text-red-600 font-semibold">
+          <span class="animate-pulse">🎙️ Recording... Click again to stop</span>
+        </div>
+
+        <div id="audioVisualization" class="hidden w-full">
+          <canvas id="visualizer" class="w-full h-24 border rounded bg-slate-100 shadow-sm"></canvas>
+        </div>
       </div>
 
-      <div id="audioVisualization" class="hidden w-full">
-        <canvas id="visualizer" class="w-full h-24 border rounded bg-gray-50"></canvas>
+      <div data-voice-recorder-target="transcriptionSection" class="hidden">
+        <h3 class="text-lg font-semibold text-slate-700 mb-1">📝 Transcription:</h3>
+        <div data-voice-recorder-target="transcriptionText" class="bg-slate-100 rounded-md p-3 text-slate-700"></div>
       </div>
-    </div>
 
-    <div id="transcriptionSection" class="hidden">
-      <h3 class="text-lg font-semibold text-gray-700 mb-1">Transcription:</h3>
-      <div id="transcriptionText" class="bg-gray-100 rounded p-3 text-gray-700"></div>
-    </div>
+      <div data-voice-recorder-target="previewSection" class="hidden">
+        <h3 class="text-lg font-semibold text-slate-700 mb-4">💡 Transaction Preview:</h3>
 
-    <div id="transactionPreview" class="hidden">
-      <h3 class="text-lg font-semibold text-gray-700 mb-4">Transaction Details:</h3>
+        <% if Current.user %>
+          <%= form_with model: @transaction, url: create_from_voice_voice_transactions_path, local: false, html: { id: "transactionForm", class: "space-y-4" } do |form| %>
+            
+            <div>
+              <%= form.label :amount, "Amount ($)", class: "block font-medium text-slate-600" %>
+              <%= form.number_field :amount, step: 0.01, class: "mt-1 w-full px-3 py-2 rounded border text-slate-700 focus:ring-teal-300", data: { voice_recorder_target: "previewAmount" } %>
+            </div>
 
-      <% if Current.user %>
-        <%= form_with model: @transaction, url: create_from_voice_voice_transactions_path, local: false, html: { id: "transactionForm", class: "space-y-4" } do |form| %>
-          <div>
-            <%= form.label :amount, "Amount ($)", class: "block font-medium text-gray-600" %>
-            <%= form.number_field :amount, step: 0.01, id: "previewAmount", class: "mt-1 block w-full border rounded px-3 py-2 text-gray-700 focus:ring focus:ring-blue-300" %>
-          </div>
+            <div>
+              <%= form.label :transaction_type, "Type", class: "block font-medium text-slate-600" %>
+              <%= form.select :transaction_type, [['Income', 'Income'], ['Expense', 'Expense']], { prompt: 'Select type' }, class: "mt-1 w-full px-3 py-2 rounded border text-slate-700 focus:ring-teal-300", data: { voice_recorder_target: "previewType" } %>
+            </div>
 
-          <div>
-            <%= form.label :transaction_type, "Type", class: "block font-medium text-gray-600" %>
-            <%= form.select :transaction_type, [['Income', 'Income'], ['Expense', 'Expense']], { prompt: 'Select type' }, class: "mt-1 block w-full border rounded px-3 py-2 text-gray-700", id: "previewType" %>
-          </div>
+            <div>
+              <%= form.label :category, "Category", class: "block font-medium text-slate-600" %>
+              <%= form.text_field :category, class: "mt-1 w-full px-3 py-2 rounded border text-slate-700", data: { voice_recorder_target: "previewCategory" } %>
+            </div>
 
-          <div>
-            <%= form.label :category, "Category", class: "block font-medium text-gray-600" %>
-            <%= form.text_field :category, id: "previewCategory", class: "mt-1 block w-full border rounded px-3 py-2 text-gray-700" %>
-          </div>
+            <div>
+              <%= form.label :description, "Description", class: "block font-medium text-slate-600" %>
+              <%= form.text_area :description, rows: 3, class: "mt-1 w-full px-3 py-2 rounded border text-slate-700", data: { voice_recorder_target: "previewDescription" } %>
+            </div>
 
-          <div>
-            <%= form.label :description, "Description", class: "block font-medium text-gray-600" %>
-            <%= form.text_area :description, rows: 3, id: "previewDescription", class: "mt-1 block w-full border rounded px-3 py-2 text-gray-700" %>
-          </div>
+            <div>
+              <%= form.label :date, "Date", class: "block font-medium text-slate-600" %>
+              <%= form.date_field :date, value: Date.current, class: "mt-1 w-full px-3 py-2 rounded border text-slate-700", data: { voice_recorder_target: "previewDate" } %>
+            </div>
 
-          <div>
-            <%= form.label :date, "Date", class: "block font-medium text-gray-600" %>
-            <%= form.date_field :date, value: Date.current, id: "previewDate", class: "mt-1 block w-full border rounded px-3 py-2 text-gray-700" %>
-          </div>
-
-          <div class="flex flex-wrap gap-2 pt-4">
-            <%= form.submit "Save Transaction", class: "px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded shadow" %>
-            <button type="button" id="recordAgainBtn" class="px-4 py-2 border border-gray-400 text-gray-600 rounded">Record Again</button>
+            <div class="flex flex-wrap gap-2 pt-4">
+              <%= form.submit "💾 Save Transaction", class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow transition" %>
+              <button type="button" data-voice-recorder-target="recordAgainButton" data-action="click->voice-recorder#recordAgain" class="px-4 py-2 border text-slate-600 rounded hover:bg-slate-100">Record Again</button>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="bg-yellow-100 p-4 rounded">
+            <p class="text-yellow-800 font-semibold">🔒 You need to log in to save this transaction.</p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <%= link_to "Log In", new_session_path, class: "px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded" %>
+              <button type="button" data-voice-recorder-target="recordAgainButton" data-action="click->voice-recorder#recordAgain" class="px-4 py-2 border text-slate-600 rounded">Record Again</button>
+            </div>
           </div>
         <% end %>
-      <% else %>
-        <div class="bg-yellow-100 p-4 rounded">
-          <p class="text-yellow-800 font-medium">You need to log in to save this transaction.</p>
-          <div class="mt-3 flex gap-2">
-            <%= link_to "Log In", new_session_path, class: "px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded" %>
-            <button type="button" id="recordAgainBtn" class="px-4 py-2 border border-gray-400 text-gray-600 rounded">Record Again</button>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  </section>
+      </div>
+    </section>
 
-  <section class="mt-8 bg-gray-50 p-6 rounded-lg">
-    <h4 class="text-md font-semibold text-gray-700 mb-2">Tips for better recognition:</h4>
-    <ul class="list-disc list-inside text-gray-600 space-y-1">
-      <li>Speak clearly and at a normal pace.</li>
-      <li>Include the amount: "I spent twenty five dollars".</li>
-      <li>Mention what it was for: "on groceries", "for lunch", etc.</li>
-      <li>Examples: "I spent $15 on coffee", "I earned $500 from freelancing".</li>
-    </ul>
-    <div class="mt-4 text-sm text-gray-500">
-      <p>This feature uses the Web Speech API (works best in Chrome, Safari, and Edge).</p>
-      <p>Firefox has limited support. Ensure microphone permissions are granted.</p>
-    </div>
-  </section>
+    <section class="bg-slate-50 p-6 rounded-lg shadow-sm">
+      <h4 class="text-md font-semibold text-slate-700 mb-2">💡 Tips for better recognition:</h4>
+      <ul class="list-disc list-inside text-slate-600 space-y-1 text-sm">
+        <li>Speak clearly and at a natural pace.</li>
+        <li>Include the amount: <em>"I spent twenty-five dollars"</em>.</li>
+        <li>Mention what it was for: <em>"on groceries", "for lunch"</em>, etc.</li>
+        <li>Examples: <em>"I spent $15 on coffee", "I earned $500 from freelancing"</em>.</li>
+      </ul>
+      <p class="mt-4 text-xs text-slate-500">
+        ⚠️ This feature uses the Web Speech API (best in Chrome, Safari, and Edge).
+        Firefox has limited support. Ensure microphone permissions are granted.
+      </p>
+    </section>
 
-  <div class="mt-6 text-center">
-    <p class="text-gray-500">Prefer manual entry?</p>
-    <%= link_to "Add transaction manually", new_transaction_path, class: "mt-2 inline-block px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50" %>
+    <div class="text-center">
+      <p class="text-slate-500 text-sm">Prefer manual entry?</p>
+      <%= link_to "Add transaction manually", new_transaction_path,
+            class: "mt-2 inline-block px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition" %>
+    </div>
   </div>
 </div>
-
-<%= javascript_include_tag "voice_transaction", defer: true %>

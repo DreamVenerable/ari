@@ -1,27 +1,26 @@
-<div id="<%= dom_id transaction %>">
+<div id="<%= dom_id transaction %>" class="text-slate-700 space-y-1 text-sm">
   <p>
-    <strong>Amount:</strong>
+    <span class="font-medium text-slate-600">💵 Amount:</span>
     <%= number_with_precision(transaction.amount, precision: 2) %>
   </p>
 
   <p>
-    <strong>Type:</strong>
+    <span class="font-medium text-slate-600">🔁 Type:</span>
     <%= transaction.transaction_type %>
   </p>
 
   <p>
-    <strong>Description:</strong>
-    <%= transaction.description %>
+    <span class="font-medium text-slate-600">📝 Description:</span>
+    <%= transaction.description.presence || "-" %>
   </p>
 
   <p>
-    <strong>Category:</strong>
-    <%= transaction.category %>
+    <span class="font-medium text-slate-600">🏷️ Category:</span>
+    <%= transaction.category.presence || "-" %>
   </p>
 
   <p>
-    <strong>Date:</strong>
-    <%= transaction.date %>
+    <span class="font-medium text-slate-600">📅 Date:</span>
+    <%= transaction.date.strftime("%B %d, %Y") %>
   </p>
-
 </div>

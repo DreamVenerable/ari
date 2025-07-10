@@ -1,42 +1,62 @@
-<%= form_with(model: transaction) do |form| %>
-  <% if transaction.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(transaction.errors.count, "error") %> prohibited this transaction from being saved:</h2>
+<% content_for :title, "Add Transaction" %>
 
-      <ul>
-        <% transaction.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+<div class="min-w-screen min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 px-4 py-10">
+  <div class="max-w-2xl mx-auto space-y-8 animate-fade-in-up">
+    
+    <header class="text-center space-y-2">
+      <h1 class="text-4xl font-bold text-slate-800">✏️ Add Transaction</h1>
+      <p class="text-slate-600">Manually enter a transaction below.</p>
+    </header>
+
+    <%= form_with(model: transaction, class: "bg-white p-6 rounded-xl shadow-md space-y-6") do |form| %>
+      <% if transaction.errors.any? %>
+        <div class="p-4 rounded-md bg-red-100 border border-red-300 text-red-800">
+          <h2 class="font-semibold mb-2">
+            <%= pluralize(transaction.errors.count, "error") %> prevented this transaction from being saved:
+          </h2>
+          <ul class="list-disc list-inside text-sm space-y-1">
+            <% transaction.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :amount, "Amount ($)", class: "block font-medium text-slate-700" %>
+        <%= form.text_field :amount, class: "mt-1 w-full px-3 py-2 border rounded-md text-slate-800 focus:ring-teal-300" %>
+      </div>
+
+      <div>
+        <%= form.label :transaction_type, "Type", class: "block font-medium text-slate-700" %>
+        <%= form.select :transaction_type, options_for_select([['Income'], ['Expense']], transaction.transaction_type),
+            {}, class: "mt-1 w-full px-3 py-2 border rounded-md text-slate-800 focus:ring-teal-300" %>
+      </div>
+
+      <div>
+        <%= form.label :description, class: "block font-medium text-slate-700" %>
+        <%= form.text_field :description, class: "mt-1 w-full px-3 py-2 border rounded-md text-slate-800" %>
+      </div>
+
+      <div>
+        <%= form.label :category, class: "block font-medium text-slate-700" %>
+        <%= form.text_field :category, class: "mt-1 w-full px-3 py-2 border rounded-md text-slate-800" %>
+      </div>
+
+      <div>
+        <%= form.label :date, class: "block font-medium text-slate-700" %>
+        <%= form.date_field :date, value: (transaction.date || Date.today), class: "mt-1 w-full px-3 py-2 border rounded-md text-slate-800" %>
+      </div>
+
+      <div class="pt-4">
+        <%= form.submit "💾 Save", class: "bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md shadow transition" %>
+      </div>
+    <% end %>
+
+    <div class="text-center">
+      <p class="text-slate-500 text-sm">Prefer using your voice?</p>
+      <%= link_to "Record transaction by voice", new_voice_transaction_path,
+            class: "mt-2 inline-block px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition" %>
     </div>
-  <% end %>
-
-  <div>
-    <%= form.label :amount, style: "display: block" %>
-    <%= form.text_field :amount %>
   </div>
-
-  <div>
-    <%= form.label :transaction_type, style: "display: block" %>
-    <%= form.select :transaction_type, options_for_select([['Income'], ['Expense']], @transaction.transaction_type), {} %>
-  </div>
-
-  <div>
-    <%= form.label :description, style: "display: block" %>
-    <%= form.text_field :description %>
-  </div>
-
-  <div>
-    <%= form.label :category, style: "display: block" %>
-    <%= form.text_field :category %>
-  </div>
-
-  <div>
-    <%= form.label :date, style: "display: block" %>
-    <%= form.date_field :date, value: (transaction.date || Date.today)  %>
-  </div>
-
-  <div>
-    <%= form.submit %>
-  </div>
-<% end %>
+</div>

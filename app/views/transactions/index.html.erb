@@ -1,87 +1,72 @@
-<p style="color: green"><%= notice %></p>
-
 <% content_for :title, "Transactions" %>
 
-<h1 class="title">Transactions</h1>
+<% if notice %>
+  <div class="max-w-4xl mx-auto mb-4 p-4 rounded-md border border-green-300 bg-green-100 text-green-800 animate-fade-in">
+    <%= notice %>
+  </div>
+<% end %>
 
-<h1>Your Balance: <%= number_to_currency(Current.user.balance) %></h1>
+<div class="min-w-screen min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 px-4 py-8">
+  <div class="max-w-2xl mx-auto space-y-8">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-slate-800 mb-2">💰 Transactions</h1>
+      <p class="text-lg text-slate-600">Track your income and expenses in real-time</p>
+    </div>
 
-<div class="transaction-actions">
-  <%= link_to "🎤 Add by Voice", new_voice_transaction_path, class: "btn btn-primary voice-btn" %>
-  <%= link_to "✏️ Add Manually", new_transaction_path, class: "btn btn-secondary" %>
+    <div class="bg-white shadow-lg rounded-xl p-6 animate-fade-in-down">
+      <div class="flex flex-col items-center mb-8">
+        <h2 class="text-md font-medium text-slate-600">Your Balance</h2>
+        <p class="text-3xl font-semibold text-teal-600">
+          <%= number_to_currency(Current.user.balance) %>
+        </p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 items-center justify-center">
+        <%= link_to "🎤 Add by Voice", new_voice_transaction_path,
+              class: "bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition" %>
+
+        <%= link_to "✏️ Add Manually", new_transaction_path,
+              class: "bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2 rounded-lg text-sm font-semibold transition" %>
+      </div>
+    </div>
+
+    <div id="transactions" class="space-y-4 animate-fade-in-up">
+      <% @transactions.each do |transaction| %>
+        <% halo_class =
+          case transaction.transaction_type
+          when "Income"
+            "ring-2 ring-green-200 ring-offset-2"
+          when "Expense"
+            "ring-2 ring-red-200 ring-offset-2"
+          else
+            "ring-0"
+          end
+        %>
+
+        <% halo_color = transaction.transaction_type == "Income" ? "rgba(132, 204, 22, 0.3)" : "rgba(239, 68, 68, 0.3)" %>
+
+        <div class="relative bg-white rounded-xl overflow-hidden shadow-md border hover:shadow-lg transition duration-300">
+          <!-- Edge halo glow (from edges inward) -->
+          <div 
+            class="absolute inset-0 rounded-xl pointer-events-none"
+            style="
+              background: radial-gradient(ellipse at center, transparent 60%, <%= halo_color %> 100%);
+              background-size: 140% 140%;
+              filter: blur(20px);
+              z-index: 0;
+            "
+          ></div>
+
+          <div class="relative z-10 p-4">
+            <div class="flex justify-between items-center">
+              <div>
+                <%= render transaction %>
+              </div>
+              <%= link_to 'View', transaction, class: 'text-sm text-teal-600 hover:underline font-medium' %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
 </div>
-
-<style>
-.transaction-actions {
-  display: flex;
-  gap: 15px;
-  margin: 20px 0;
-  flex-wrap: wrap;
-}
-
-.btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  color: white;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, #0056b3, #004085);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
-}
-
-.btn-secondary {
-  background: #6c757d;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background: #545b62;
-  transform: translateY(-1px);
-}
-
-.voice-btn {
-  position: relative;
-  overflow: hidden;
-}
-
-.voice-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s;
-}
-
-.voice-btn:hover::before {
-  left: 100%;
-}
-</style>
-
-<div id="transactions">
-  <% @transactions.each do |transaction| %>
-    <%= render transaction %>
-    <p>
-      <%= link_to "Show this transaction", transaction %>
-    </p>
-  <% end %>
-</div>
-

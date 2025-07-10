@@ -9,7 +9,7 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
- /* Default light mode styles */
+/* Default light mode styles */
 body {
   background-color: #ffffff;
   color: #000000;
@@ -22,28 +22,10 @@ main {
   align-items: center;
   gap: 1rem;
   min-height: 100vh; /* Ensure it spans the full viewport height */
-  margin: 20px;
+  /* margin: 20px; */
 }
 
 .title {
   position: absolute; /* Position it relative to the viewport */
   top: 20px; /* Adjust the distance from the top */
-  left: 50%; /* Center horizontally */
-  transform: translateX(-50%); /* Adjust for its width */
-  text-align: center; /* Center text if it spans multiple lines */
-}
-
-
-/* Dark mode styles */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #121212;
-    color: #ffffff;
-  }
-
-  a {
-    color: #4dabf7; /* Adjust link colors for better visibility */
-  }
-
-  /* Add any additional styling you need */
 }

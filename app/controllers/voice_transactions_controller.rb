@@ -1,5 +1,4 @@
 class VoiceTransactionsController < ApplicationController
-
   def new
     # Build a blank transaction regardless of login status, JS will handle auth if needed
     @transaction = Current.user ? Current.user.transactions.build : Transaction.new
@@ -28,15 +27,14 @@ class VoiceTransactionsController < ApplicationController
 
     @transaction = Current.user.transactions.build(transaction_params)
 
-    if @transaction.save
-      render json: {
-        success: true,
-        transaction: @transaction,
-        message: "Transaction created successfully",
-        redirect_url: transaction_path(@transaction)
-      }
-    else
-      render json: { success: false, errors: @transaction.errors.full_messages }, status: :unprocessable_entity
+    respond_to do |format|
+      if @transaction.save
+        format.html { redirect_to root_path, notice: "Transaction was successfully created." }
+        format.json { render :show, status: :created, location: @transaction }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @transaction.errors, status: :unprocessable_entity }
+      end
     end
   end
 
