@@ -123,7 +123,7 @@ export default class extends Controller {
 
   async processTranscription(text) {
     try {
-      const res = await fetch("/voice_transactions/process_audio", {
+      const res = await fetch("/voice/process_audio", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

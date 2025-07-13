@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   resources :recurring_transactions
 
   # Voice transaction routes
-  resources :voice_transactions, only: [ :new ] do
+  resource :voice, controller: "voice" do
     collection do
       post :process_audio
       post :create_from_voice

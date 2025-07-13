@@ -1,4 +1,4 @@
-class VoiceTransactionsController < ApplicationController
+class VoiceController < ApplicationController
   def new
     # Build a blank transaction regardless of login status, JS will handle auth if needed
     @transaction = Current.user ? Current.user.transactions.build : Transaction.new
@@ -53,15 +53,15 @@ class VoiceTransactionsController < ApplicationController
       transaction_type: infer_type(text),
       category: infer_category(text),
       description: text,
-      date: Time.current.strftime('%Y-%m-%dT%H:%M')
+      date: Time.current.strftime("%Y-%m-%dT%H:%M")
     }
 
     data
   end
 
   def infer_type(text)
-    income = %w[earned received income salary bonus refund gift found gained]
-    expense = %w[spent bought paid purchase cost expense lost donated]
+    income = %w[earned received income salary bonus refund gift found gained gave\ me]
+    expense = %w[spent bought paid purchase cost expense lost donated gave]
     text_down = text.downcase
 
     return "Income" if income.any? { |w| text_down.include?(w) }
