@@ -27,5 +27,5 @@ class ProcessRecurringTransactionJob < ApplicationJob
         recurring_transaction.update!(last_processed_at: Date.current)
       else
       end
-    end
   end
+end

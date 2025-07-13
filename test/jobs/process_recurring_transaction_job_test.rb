@@ -19,7 +19,7 @@ class ProcessRecurringTransactionJobTest < ActiveJob::TestCase
   end
 
   test "should process recurring transaction and create new transaction" do
-    assert_difference('Transaction.count', 1) do
+    assert_difference("Transaction.count", 1) do
       perform_enqueued_jobs do
         ProcessRecurringTransactionJob.perform_now(@recurring_transaction.id)
       end
@@ -32,7 +32,7 @@ class ProcessRecurringTransactionJobTest < ActiveJob::TestCase
   test "should not process recurring transaction if not due" do
     @recurring_transaction.update!(last_processed_at: Date.current)
 
-    assert_no_difference('Transaction.count') do
+    assert_no_difference("Transaction.count") do
       perform_enqueued_jobs do
         ProcessRecurringTransactionJob.perform_now
       end
@@ -51,7 +51,7 @@ class ProcessRecurringTransactionJobTest < ActiveJob::TestCase
       no_end_date: true
     )
 
-    assert_difference('Transaction.count', 1) do
+    assert_difference("Transaction.count", 1) do
       perform_enqueued_jobs do
         ProcessRecurringTransactionJob.perform_now(recurring_transaction_no_end_date.id)
       end

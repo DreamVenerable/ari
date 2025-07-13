@@ -1,5 +1,5 @@
 class RecurringTransactionsController < ApplicationController
-  before_action :set_recurring_transaction, only: [:show, :edit, :update, :destroy]
+  before_action :set_recurring_transaction, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @recurring_transactions = Current.user.recurring_transactions
@@ -31,7 +31,7 @@ class RecurringTransactionsController < ApplicationController
 
   def update
     if @recurring_transaction.update(recurring_transaction_params)
-      redirect_to @recurring_transaction, notice: 'Recurring transaction was successfully updated.'
+      redirect_to @recurring_transaction, notice: "Recurring transaction was successfully updated."
     else
       render :edit
     end
@@ -39,7 +39,7 @@ class RecurringTransactionsController < ApplicationController
 
   def destroy
     @recurring_transaction.destroy
-    redirect_to recurring_transactions_url, notice: 'Recurring transaction was successfully destroyed.'
+    redirect_to recurring_transactions_url, notice: "Recurring transaction was successfully destroyed."
   end
 
   private
@@ -49,10 +49,9 @@ class RecurringTransactionsController < ApplicationController
 
     def recurring_transaction_params
       params.require(:recurring_transaction).permit(:amount, :category, :transaction_type, :frequency, :start_date, :end_date, :description, :no_end_date).tap do |whitelisted_params|
-        if whitelisted_params[:no_end_date] == '1'
+        if whitelisted_params[:no_end_date] == "1"
           whitelisted_params[:end_date] = nil
         end
-
       end
     end
 end
