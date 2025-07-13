@@ -45,7 +45,7 @@
 
       <div>
         <%= form.label :date, class: "block font-medium text-slate-700" %>
-        <%= form.date_field :date, value: (transaction.date || Date.today), class: "mt-1 w-full px-3 py-2 border rounded-md text-slate-800" %>
+        <%= form.datetime_field :date, value: (Time.current), class: "mt-1 w-full px-3 py-2 border rounded-md text-slate-800" %>
       </div>
 
       <div class="pt-4">

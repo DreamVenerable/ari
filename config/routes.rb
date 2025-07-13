@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resources :transactions
+  resources :recurring_transactions
 
   # Voice transaction routes
   resources :voice_transactions, only: [ :new ] do

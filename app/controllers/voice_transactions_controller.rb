@@ -30,7 +30,7 @@ class VoiceTransactionsController < ApplicationController
     respond_to do |format|
       if @transaction.save
         format.html { redirect_to root_path, notice: "Transaction was successfully created." }
-        format.json { render :show, status: :created, location: @transaction }
+        format.json { render json: @transaction, status: :created, location: @transaction }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @transaction.errors, status: :unprocessable_entity }
@@ -53,7 +53,7 @@ class VoiceTransactionsController < ApplicationController
       transaction_type: infer_type(text),
       category: infer_category(text),
       description: text,
-      date: Date.current.to_s
+      date: Time.current.strftime('%Y-%m-%dT%H:%M')
     }
 
     data

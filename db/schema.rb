@@ -10,7 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_08_195809) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_13_120425) do
+  create_table "recurring_transactions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.decimal "amount"
+    t.string "category"
+    t.string "transaction_type"
+    t.string "frequency"
+    t.date "start_date"
+    t.date "end_date"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "last_processed_at"
+    t.index ["user_id"], name: "index_recurring_transactions_on_user_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -25,7 +40,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_08_195809) do
     t.decimal "amount", precision: 10, scale: 2
     t.string "description"
     t.string "category"
-    t.date "date"
+    t.datetime "date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "transaction_type"
@@ -41,6 +56,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_08_195809) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "recurring_transactions", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "transactions", "users"
 end

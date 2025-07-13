@@ -68,7 +68,7 @@
 
             <div>
               <%= form.label :date, "Date", class: "block font-medium text-slate-600" %>
-              <%= form.date_field :date, value: Date.current, class: "mt-1 w-full px-3 py-2 rounded border text-slate-700", data: { voice_recorder_target: "previewDate" } %>
+              <%= form.datetime_field :date, value: (Time.current.strftime('%Y-%m-%dT%H:%M')), class: "mt-1 w-full px-3 py-2 rounded border text-slate-700", data: { voice_recorder_target: "previewDate" } %>
             </div>
 
             <div class="flex flex-wrap gap-2 pt-4">

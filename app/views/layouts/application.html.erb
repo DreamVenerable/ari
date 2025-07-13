@@ -23,9 +23,12 @@
   </head>
 
   <body>
-    <nav>
-      <%#= link_to "Home", root_path %>
-      <%#= button_to "Log out", session_path, method: :delete if authenticated? %>
+    <nav class="bg-gray-800 p-4 text-white flex justify-between items-center">
+      <%= link_to "Ari", root_path, class: "text-xl font-bold hover:text-gray-300" %>
+      <div class="space-x-4">
+        <%= link_to "Recurring Transactions", recurring_transactions_path, class: "hover:text-gray-300" %>
+        <%#= button_to "Log out", session_path, method: :delete if authenticated? %>
+      </div>
     </nav>
 
     <main class="w-screen">

@@ -1,0 +1,40 @@
+<h1 class="text-2xl font-bold mb-4">Recurring Transactions</h1>
+
+<div class="mb-4">
+  <%= link_to 'New Recurring Transaction', new_recurring_transaction_path, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+</div>
+
+<div class="overflow-x-auto">
+  <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+    <thead class="bg-gray-200 text-gray-700">
+      <tr>
+        <th class="py-3 px-4 text-left">Amount</th>
+        <th class="py-3 px-4 text-left">Category</th>
+        <th class="py-3 px-4 text-left">Type</th>
+        <th class="py-3 px-4 text-left">Frequency</th>
+        <th class="py-3 px-4 text-left">Start Date</th>
+        <th class="py-3 px-4 text-left">End Date</th>
+        <th class="py-3 px-4 text-left">Description</th>
+        <th class="py-3 px-4 text-left">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-600">
+      <% @recurring_transactions.each do |recurring_transaction| %>
+        <tr class="border-b border-gray-200 hover:bg-gray-100">
+          <td class="py-3 px-4"><%= number_to_currency(recurring_transaction.amount) %></td>
+          <td class="py-3 px-4"><%= recurring_transaction.category %></td>
+          <td class="py-3 px-4"><%= recurring_transaction.transaction_type %></td>
+          <td class="py-3 px-4"><%= recurring_transaction.frequency %></td>
+          <td class="py-3 px-4"><%= recurring_transaction.start_date %></td>
+          <td class="py-3 px-4"><%= recurring_transaction.end_date %></td>
+          <td class="py-3 px-4"><%= recurring_transaction.description %></td>
+          <td class="py-3 px-4">
+            <%= link_to 'Show', recurring_transaction, class: "text-blue-500 hover:underline mr-2" %>
+            <%= link_to 'Edit', edit_recurring_transaction_path(recurring_transaction), class: "text-yellow-500 hover:underline mr-2" %>
+            <%= link_to 'Destroy', recurring_transaction, data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' }, class: "text-red-500 hover:underline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

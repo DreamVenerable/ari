@@ -1,0 +1,56 @@
+<%= form_with(model: recurring_transaction, data: { controller: "recurring-transactions" }) do |form| %>
+  <% if recurring_transaction.errors.any? %>
+    <div class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+      <h2><%= pluralize(recurring_transaction.errors.count, "error") %> prohibited this recurring_transaction from being saved:</h2>
+
+      <ul>
+        <% recurring_transaction.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <%= form.label :amount, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.number_field :amount, step: 0.01, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :category, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.text_field :category, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :transaction_type, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.select :transaction_type, ["income", "expense"], { selected: "income" }, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :frequency, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.select :frequency, ["daily", "weekly", "monthly", "yearly"], {}, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :start_date, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.date_field :start_date, value: Date.today, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+  </div>
+
+  <div class="mb-4" data-recurring-transactions-target="endDateFieldContainer" style="display: none;">
+    <%= form.label :end_date, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.date_field :end_date, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+  </div>
+
+  <div class="mb-4">
+    <button type="button" data-action="recurring-transactions#addEndDate" data-recurring-transactions-target="addEndDateButton" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Add End Date</button>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :description, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.text_area :description, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.submit class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
+  </div>
+<% end %>
