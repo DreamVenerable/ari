@@ -13,7 +13,24 @@ export default class extends Controller {
     "previewType",
     "previewCategory",
     "previewDescription",
-    "previewDate"
+    "previewDate",
+    "transactionForm",
+    "recurringTransactionForm",
+    "previewFrequency",
+    "previewStartDate",
+    "previewEndDate",
+    "previewNoEndDate",
+    "isRecurringField",
+    "recurringPreviewAmount",
+    "recurringPreviewType",
+    "recurringPreviewCategory",
+    "recurringPreviewDescription",
+    "recurringPreviewFrequency",
+    "recurringPreviewStartDate",
+    "recurringPreviewEndDate",
+    "recurringEndDateField",
+    "addRecurringEndDateButton",
+    "removeRecurringEndDateButton"
   ]
 
   connect() {
@@ -151,11 +168,65 @@ export default class extends Controller {
   }
 
   fillTransactionPreview(data) {
-    this.previewAmountTarget.value = data.amount
-    this.previewTypeTarget.value = data.transaction_type
-    this.previewCategoryTarget.value = data.category
-    this.previewDescriptionTarget.value = data.description
-    this.previewDateTarget.value = data.date
+    console.log("fillTransactionPreview called with data:", data);
+    console.log("is_recurring value from data:", data.is_recurring);
+    console.log("Type of is_recurring:", typeof data.is_recurring);
+    console.log("form_type value from data:", data.form_type);
+
+    if (!!data.is_recurring) {
+      console.log("Attempting to show recurring transaction form and hide regular transaction form.");
+      this.recurringTransactionFormTarget.classList.remove("hidden")
+      this.transactionFormTarget.classList.add("hidden")
+      console.log("Recurring transaction form visibility after update:", this.recurringTransactionFormTarget.classList.contains('hidden') ? 'hidden' : 'visible');
+      console.log("Regular transaction form visibility after update:", this.transactionFormTarget.classList.contains('hidden') ? 'hidden' : 'visible');
+      // Assuming you have targets for recurring transaction fields as well
+      // For now, just filling the common ones
+      this.recurringPreviewAmountTarget.value = data.amount
+      this.recurringPreviewTypeTarget.value = data.transaction_type
+      this.recurringPreviewCategoryTarget.value = data.category
+      this.recurringPreviewDescriptionTarget.value = data.description
+      this.recurringPreviewFrequencyTarget.value = data.frequency
+      this.recurringPreviewStartDateTarget.value = data.start_date
+      this.recurringPreviewEndDateTarget.value = data.end_date
+      this.isRecurringFieldTarget.value = 'true';
+      console.log("Recurring transaction form visibility:", this.recurringTransactionFormTarget.classList.contains('hidden') ? 'hidden' : 'visible');
+      console.log("Regular transaction form visibility:", this.transactionFormTarget.classList.contains('hidden') ? 'hidden' : 'visible');
+    } else {
+      console.log("Attempting to show regular transaction form and hide recurring transaction form.");
+      this.isRecurringFieldTarget.value = 'false';
+      this.transactionFormTarget.classList.remove("hidden");
+      this.recurringTransactionFormTarget.classList.add("hidden")
+      console.log("Recurring transaction form visibility after update:", this.recurringTransactionFormTarget.classList.contains('hidden') ? 'hidden' : 'visible');
+      console.log("Regular transaction form visibility after update:", this.transactionFormTarget.classList.contains('hidden') ? 'hidden' : 'visible');
+      this.previewAmountTarget.value = data.amount
+      this.previewTypeTarget.value = data.transaction_type
+      this.previewCategoryTarget.value = data.category
+      this.previewDescriptionTarget.value = data.description
+      this.previewDateTarget.value = data.date
+    }
+
+    // Handle visibility of recurring end date field
+    if (data.is_recurring && (data.end_date === null || data.end_date === "")) {
+      this.recurringEndDateFieldTarget.classList.add("hidden");
+      this.addRecurringEndDateButtonTarget.classList.remove("hidden");
+    } else if (data.is_recurring && data.end_date !== null && data.end_date !== "") {
+      this.recurringEndDateFieldTarget.classList.remove("hidden");
+      this.addRecurringEndDateButtonTarget.classList.add("hidden");
+      this.removeRecurringEndDateButtonTarget.classList.remove("hidden");
+    }
+  }
+
+  addRecurringEndDate() {
+    this.recurringEndDateFieldTarget.classList.remove("hidden");
+    this.addRecurringEndDateButtonTarget.classList.add("hidden");
+    this.removeRecurringEndDateButtonTarget.classList.remove("hidden");
+  }
+
+  removeRecurringEndDate() {
+    this.recurringPreviewEndDateTarget.value = "";
+    this.recurringEndDateFieldTarget.classList.add("hidden");
+    this.addRecurringEndDateButtonTarget.classList.remove("hidden");
+    this.removeRecurringEndDateButtonTarget.classList.add("hidden");
   }
 
   getCsrfToken() {

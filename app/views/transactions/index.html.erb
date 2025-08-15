@@ -1,4 +1,4 @@
-<% content_for :title, "Transactions" %>
+<% content_for :title, "Dashboard" %>
 
 <% if notice %>
   <div class="max-w-4xl mx-auto mb-4 p-4 rounded-md border border-green-300 bg-green-100 text-green-800 animate-fade-in">
@@ -6,67 +6,138 @@
   </div>
 <% end %>
 
-<div class="min-w-screen min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 px-4 py-8">
-  <div class="max-w-2xl mx-auto space-y-8">
-    <div class="text-center">
-      <h1 class="text-4xl font-bold text-slate-800 mb-2">💰 Transactions</h1>
-      <p class="text-lg text-slate-600">Track your income and expenses in real-time</p>
+<div class="w-full min-h-screen bg-white dark:bg-slate-900 px-4 py-8">
+  <div class="w-4/5 m-auto ">
+    <div class="mb-8 flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-800 dark:text-white mb-2">Dashboard</h1>
+        <p class="text-lg text-slate-600 dark:text-slate-400">Welcome back, Seefow. Here's your financial overview.</p>
+      </div>
+      <div>
+        <%= link_to "Add", new_transaction_path,
+              class: "bg-teal-600 hover:bg-teal-700 text-white px-5 py-5 rounded-2xl text-sm font-semibold transition" %>
+      </div>
     </div>
 
-    <div class="bg-white shadow-lg rounded-xl p-6 animate-fade-in-down">
-      <div class="flex flex-col items-center mb-8">
-        <h2 class="text-md font-medium text-slate-600">Your Balance</h2>
-        <p class="text-3xl font-semibold text-teal-600">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white dark:bg-slate-800 shadow rounded-xl p-6 animate-fade-in-down">
+        <h2 class="text-md font-medium text-slate-600 dark:text-slate-400 mb-2">Total Balance</h2>
+        <p class="text-3xl font-semibold text-slate-800 dark:text-white">
           <%= number_to_currency(Current.user.balance) %>
         </p>
       </div>
-      <div class="flex flex-col sm:flex-row gap-3 items-center justify-center">
-        <%= link_to "🎤 Add by Voice", new_voice_path,
-              class: "bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition" %>
 
-        <%= link_to "✏️ Add Manually", new_transaction_path,
-              class: "bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2 rounded-lg text-sm font-semibold transition" %>
-      </div>
-    </div>
+      <div class="bg-white dark:bg-slate-800 shadow rounded-xl p-6 animate-fade-in-down">
+        <h2 class="text-md font-medium text-slate-600 dark:text-slate-400">This Month's Earning</h2>
+        <p class="text-3xl font-semibold text-green-600 mb-2">
+          +<%= number_to_currency(Current.user.month_income) %>
+        </p>
 
-    <div id="transactions" class="space-y-4 animate-fade-in-up">
-      <% @transactions.each do |transaction| %>
-        <% halo_class =
-          case transaction.transaction_type
-          when "Income"
-            "ring-2 ring-green-200 ring-offset-2"
-          when "Expense"
-            "ring-2 ring-red-200 ring-offset-2"
-          else
-            "ring-0"
-          end
-        %>
-
-        <% halo_color = transaction.transaction_type == "Income" ? "rgba(132, 204, 22, 0.3)" : "rgba(239, 68, 68, 0.3)" %>
-
-        <div class="relative bg-white rounded-xl overflow-hidden shadow-md border hover:shadow-lg transition duration-300">
-          <!-- Edge halo glow (from edges inward) -->
-          <div 
-            class="absolute inset-0 rounded-xl pointer-events-none"
-            style="
-              background: radial-gradient(ellipse at center, transparent 60%, <%= halo_color %> 100%);
-              background-size: 140% 140%;
-              filter: blur(20px);
-              z-index: 0;
-            "
-          ></div>
-
-          <div class="relative z-10 p-4">
-            <div class="flex justify-between items-center">
-              <div>
-                <%= render transaction %>
-              </div>
-              <%= link_to 'View', transaction, class: 'text-sm text-teal-600 hover:underline font-medium' %>
+        <div class="bg-white dark:bg-slate-800 shadow rounded-xl p-6 animate-fade-in-down">
+          <h2 class="text-md font-medium text-slate-600 dark:text-slate-400 mb-2">Earning Breakdown</h2>
+          <div class="space-y-2 mt-2">
+            <div class="flex justify-between">
+              <span class="dark:text-slate-300">Groceries</span>
+              <span class="dark:text-slate-300">$550</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="dark:text-slate-300">Dining</span>
+              <span class="dark:text-slate-300">$320</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="dark:text-slate-300">Utilities</span>
+              <span class="dark:text-slate-300">$200</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="dark:text-slate-300">Entertainment</span>
+              <span class="dark:text-slate-300">$184.32</span>
             </div>
           </div>
         </div>
-      <% end %>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 shadow rounded-xl p-6 animate-fade-in-down">
+        <h2 class="text-md font-medium text-slate-600 dark:text-slate-400">This Month's Spending</h2>
+        <p class="text-3xl font-semibold text-red-600 mb-1">
+          -<%= number_to_currency(Current.user.month_expense) %>
+        </p>
+
+        <div class="bg-white dark:bg-slate-800 shadow rounded-xl p-6 animate-fade-in-down">
+          <h2 class="text-md font-medium text-slate-600 dark:text-slate-400 mb-2">Spending Breakdown</h2>
+          <div class="space-y-2 mt-2">
+            <div class="flex justify-between">
+              <span>Groceries</span>
+              <span>$550</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Dining</span>
+              <span>$320</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Utilities</span>
+              <span>$200</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Entertainment</span>
+              <span>$184.32</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      <div class="bg-white dark:bg-slate-800 shadow rounded-xl p-6 animate-fade-in-up">
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">Recent Transactions</h2>
+        <div class="card p-0">
+          <% @transactions.limit(5).each do |t| %>
+            <%= link_to t, class: "transaction-item px-6 py-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer transition flex justify-between items-center" do %>
+              <div class="flex items-center gap-4">
+                <div class="flex items-center justify-center size-12 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
+                  <% if t.category&.downcase&.include?("groceries") %>
+                    <svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87ZM96,204a12,12,0,1,1-12-12A12,12,0,0,1,96,204Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,192,204Zm4-74.57A8,8,0,0,1,188.1,136H69.22L57.59,72H206.41Z"></path></svg>
+                  <% elsif t.category&.downcase&.include?("utilities") %>
+                    <svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M72,104a8,8,0,0,1,8-8h96a8,8,0,0,1,0,16H80A8,8,0,0,1,72,104Zm8,40h96a8,8,0,0,0,0-16H80a8,8,0,0,0,0,16ZM232,56V208a8,8,0,0,1-11.58,7.15L192,200.94l-28.42,14.21a8,8,0,0,1-7.16,0L128,200.94,99.58,215.15a8,8,0,0,1-7.16,0L64,200.94,35.58,215.15A8,8,0,0,1,24,208V56A16,16,0,0,1,40,40H216A16,16,0,0,1,232,56Zm-16,0H40V195.06l20.42-10.22a8,8,0,0,1,7.16,0L96,199.06l28.42-14.22a8,8,0,0,1,7.16,0L160,199.06l28.42-14.22a8,8,0,0,1,7.16,0L216,195.06Z"></path></svg>
+                  <% elsif t.category&.downcase&.include?("entertainment") %>
+                    <svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M216,104H102.09L210,75.51a8,8,0,0,0,5.68-9.84l-8.16-30a15.93,15.93,0,0,0-19.42-11.13L35.81,64.74a15.75,15.75,0,0,0-9.7,7.4,15.51,15.51,0,0,0-1.55,12L32,111.56c0,.14,0,.29,0,.44v88a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V112A8,8,0,0,0,216,104ZM192.16,40l6,22.07-22.62,6L147.42,51.83Zm-66.69,17.6,28.12,16.24-36.94,9.75L88.53,67.37Zm-79.4,44.62-6-22.08,26.5-7L94.69,89.4ZM208,200H48V120H208v80Z"></path></svg>
+                  <% elsif t.category&.downcase&.include?("dining") %>
+                    <svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M72,88V40a8,8,0,0,1,16,0V88a8,8,0,0,1-16,0ZM216,40V224a8,8,0,0,1-16,0V176H152a8,8,0,0,1-8-8,268.75,268.75,0,0,1,7.22-56.88c9.78-40.49,28.32-67.63,53.63-78.47A8,8,0,0,1,216,40ZM200,53.9c-32.17,24.57-38.47,84.42-39.7,106.1H200ZM119.89,38.69a8,8,0,1,0-15.78,2.63L112,88.63a32,32,0,0,1-64,0l7.88-47.31a8,8,0,1,0-15.78-2.63l-8,48A8.17,8.17,0,0,0,32,88a48.07,48.07,0,0,0,40,47.32V224a8,8,0,0,0,16,0V135.32A48.07,48.07,0,0,0,128,88a8.17,8.17,0,0,0-.11-1.31Z"></path></svg>
+                  <% else %>
+                    <svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm48-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h40A8,8,0,0,1,176,128Z"></path></svg>
+                  <% end %>
+                </div>
+                <div>
+                  <p class="font-semibold text-slate-800 dark:text-white"><%= t.description %></p>
+                  <p class="text-sm text-slate-600 dark:text-slate-400"><%= t.category %></p>
+                </div>
+              </div>
+              <p class="font-semibold text-right text-base <%= t.transaction_type == "Income" ? 'text-green-600' : 'text-red-600' %>">
+                <%= t.transaction_type == "Income" ? '+' : '-' %><%= number_to_currency(t.amount.abs) %>
+              </p>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 shadow rounded-xl p-6 animate-fade-in-up">
+        <h2 class="text-xl font-semibold text-slate-800 dark:text-white mb-4">Spending Trends</h2>
+        <div class="h-64 w-full bg-blue-50 dark:bg-slate-700 rounded-lg relative overflow-hidden">
+          <!-- Simple SVG path to simulate a spending chart -->
+          <svg viewBox="0 0 100 50" preserveAspectRatio="none" class="h-full w-full">
+            <path d="M0,50 L0,35 C5,28 10,40 15,30 C20,20 25,15 30,25 C35,35 40,30 45,35 C50,40 55,38 60,30 C65,22 70,25 75,35 C80,45 85,48 90,15 C95,5 100,10 100,10 L100,50 Z" fill="rgba(59, 130, 246, 0.2)" />
+            <path d="M0,35 C5,28 10,40 15,30 C20,20 25,15 30,25 C35,35 40,30 45,35 C50,40 55,38 60,30 C65,22 70,25 75,35 C80,45 85,48 90,15 C95,5 100,10 100,10" fill="none" stroke="#3b82f6" stroke-width="0.5" />
+          </svg>
+          <div class="absolute bottom-0 w-full flex justify-between px-4 text-xs text-slate-600 dark:text-slate-400">
+            <span>Jan</span>
+            <span>Feb</span>
+            <span>Mar</span>
+            <span>Apr</span>
+            <span>May</span>
+            <span>Jun</span>
+            <span>Jul</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

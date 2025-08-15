@@ -13,8 +13,10 @@ class ProcessRecurringTransactionJobTest < ActiveJob::TestCase
       category: "Utilities",
       transaction_type: "expense",
       frequency: "daily",
+      description: "Test recurring expense",
       start_date: Date.current - 1.day,
-      last_processed_at: Date.current - 1.day
+      last_processed_at: Date.current - 1.day,
+      no_end_date: false
     )
   end
 
@@ -46,9 +48,11 @@ class ProcessRecurringTransactionJobTest < ActiveJob::TestCase
       category: "Salary",
       transaction_type: "income",
       frequency: "daily",
+      description: "Test recurring income",
       start_date: Date.current - 1.day,
       last_processed_at: Date.current - 1.day,
-      no_end_date: true
+      no_end_date: true,
+      end_date: nil
     )
 
     assert_difference("Transaction.count", 1) do

@@ -3,15 +3,12 @@ class RecurringTransaction < ApplicationRecord
 
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :category, presence: true
-  validates :transaction_type, presence: true, inclusion: { in: %w(income expense) }
-  validates :frequency, presence: true, inclusion: { in: %w(daily weekly monthly yearly) }
+  validates :transaction_type, presence: true, inclusion: { in: %w[income expense] }
+  validates :frequency, presence: true, inclusion: { in: %w[daily weekly monthly yearly] }
   validates :start_date, presence: true
+  validates :description, presence: true
 
   attribute :no_end_date, :boolean, default: false
-
-  def no_end_date?
-    no_end_date
-  end
 
   def due?
     return false if end_date && end_date < Date.current
@@ -20,13 +17,13 @@ class RecurringTransaction < ApplicationRecord
       start_date <= Date.current
     else
       case frequency
-      when 'daily'
+      when "daily"
         last_processed_at < Date.current
-      when 'weekly'
+      when "weekly"
         last_processed_at < 1.week.ago(Date.current)
-      when 'monthly'
+      when "monthly"
         last_processed_at < 1.month.ago(Date.current)
-      when 'yearly'
+      when "yearly"
         last_processed_at < 1.year.ago(Date.current)
       else
         false

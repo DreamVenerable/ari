@@ -6,8 +6,9 @@ class CreateRecurringTransactions < ActiveRecord::Migration[8.0]
       t.string :category
       t.string :transaction_type
       t.string :frequency
-      t.date :start_date
-      t.date :end_date
+      t.datetime :start_date
+      t.datetime :end_date
+      t.boolean :no_end_date, default: false
       t.text :description
 
       t.timestamps
