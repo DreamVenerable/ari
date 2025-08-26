@@ -78,14 +78,11 @@
       <%= yield %>
     </main>
 
-    <!-- Floating Voice Input Button -->
+    <!-- Floating Voice Input Button and Transaction Form Modal -->
     <% if authenticated? %>
-      <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-        <%= link_to new_voice_path, class: "flex items-center justify-center w-14 h-14 bg-teal-600 hover:bg-teal-700 rounded-full shadow-lg transition-all hover:scale-105" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-          </svg>
-        <% end %>
+      <div data-controller="voice-recorder">
+        <%= render 'shared/voice_button' %>
+        <%= render 'shared/transaction_form_modal' %>
       </div>
     <% end %>
   </body>

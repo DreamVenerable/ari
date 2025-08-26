@@ -7,7 +7,6 @@ export default class extends Controller {
     "transcriptionSection",
     "transcriptionText",
     "previewSection",
-    "recordAgainButton",
     "editTransactionButton",
     "previewAmount",
     "previewType",
@@ -40,15 +39,78 @@ export default class extends Controller {
     this.silenceTimeout = null
   }
 
+  closeModal() {
+    if (this.isRecording) {
+      this.stopRecording()
+    }
+    
+    const modal = document.getElementById('transaction-form-modal')
+    if (modal) {
+      modal.classList.add('hidden')
+      if (this.hasTranscriptionSectionTarget) {
+        this.transcriptionSectionTarget.classList.add('hidden')
+      }
+      if (this.hasPreviewSectionTarget) {
+        this.previewSectionTarget.classList.add('hidden')
+      }
+    }
+  }
+
+  closeModalOnOutsideClick(event) {
+    // Only close if clicking directly on the modal background (not its children)
+    if (event.target.id === 'transaction-form-modal') {
+      this.closeModal()
+    }
+  }
+
+  stopPropagation(event) {
+    // Prevent clicks inside the modal content from bubbling up to the modal background
+    event.stopPropagation()
+  }
+
+  stopRecording() {
+    if (this.isRecording && this.recognition) {
+      clearTimeout(this.silenceTimeout)
+      this.recognition.stop()
+      this.isRecording = false
+
+      if (this.hasRecordingStatusTarget) {
+        this.recordingStatusTarget.textContent = "Ready"
+        this.recordingStatusTarget.classList.remove("text-red-500")
+        this.recordingStatusTarget.classList.add("text-slate-500")
+      }
+    }
+  }
+
   startOrStopRecording() {
     if (!this.recognition || typeof this.recognition.stop !== "function") {
       this.recognition = this.initSpeechRecognition()
     }
 
     if (this.isRecording) {
-      clearTimeout(this.silenceTimeout)
-      this.recognition.stop()
+      this.stopRecording()
     } else {
+      // Reset everything to initial state
+      this.transcriptBuffer = ""
+      if (this.hasTranscriptionTextTarget) {
+        this.transcriptionTextTarget.textContent = ""
+      }
+      
+      // Hide modal sections if they're open
+      if (this.hasTranscriptionSectionTarget) {
+        this.transcriptionSectionTarget.classList.add("hidden")
+      }
+      if (this.hasPreviewSectionTarget) {
+        this.previewSectionTarget.classList.add("hidden")
+      }
+      
+      // Hide the modal overlay
+      const modalOverlay = document.querySelector('#transaction-form-modal')
+      if (modalOverlay) {
+        modalOverlay.classList.add("hidden")
+      }
+      
+      // Start recording
       requestAnimationFrame(() => {
         setTimeout(() => {
           try {
@@ -62,12 +124,7 @@ export default class extends Controller {
     }
   }
 
-  recordAgain() {
-    this.transcriptBuffer = ""
-    this.transcriptionTextTarget.textContent = ""
-    this.transcriptionSectionTarget.classList.add("hidden")
-    this.previewSectionTarget.classList.add("hidden")
-  }
+
 
   editTransaction() {
     this.previewAmountTarget?.focus()
@@ -81,7 +138,7 @@ export default class extends Controller {
     }
 
     const recognition = new SpeechRecognition()
-    recognition.lang = "en-US"
+    recognition.lang = "en-CA"
     recognition.continuous = true
     recognition.interimResults = true
 
@@ -90,9 +147,18 @@ export default class extends Controller {
       this.transcriptBuffer = ""
       this.recordButtonTarget.classList.add("bg-red-600", "hover:bg-red-700")
       this.recordingStatusTarget.classList.remove("hidden")
-      this.transcriptionSectionTarget.classList.add("hidden")
-      this.transcriptionTextTarget.textContent = ""
-      this.previewSectionTarget.classList.add("hidden")
+      
+      // Show the modal and transcription section when recording starts
+      const modalOverlay = document.querySelector('#transaction-form-modal')
+      if (modalOverlay) {
+        modalOverlay.classList.remove("hidden")
+        // Ensure the transcription section is visible and preview is hidden
+        this.transcriptionSectionTarget.classList.remove("hidden")
+        this.transcriptionTextTarget.textContent = ""
+        this.previewSectionTarget.classList.add("hidden")
+      } else {
+        console.error("Modal overlay not found")
+      }
     }
 
     recognition.onresult = (event) => {
@@ -112,9 +178,22 @@ export default class extends Controller {
           recognition.stop()
         }
       }, 1000)
-
-      this.transcriptionSectionTarget.classList.remove("hidden")
-      this.transcriptionTextTarget.textContent = this.transcriptBuffer + interimTranscript
+      
+      // Show transcription in real-time while speaking
+      const modalOverlay = document.querySelector('#transaction-form-modal')
+      if (modalOverlay) {
+        // Ensure the modal is visible
+        modalOverlay.classList.remove("hidden")
+        // Ensure the transcription section is visible
+        this.transcriptionSectionTarget.classList.remove("hidden")
+        // Update the transcription text
+        this.transcriptionTextTarget.textContent = this.transcriptBuffer + interimTranscript
+      } else {
+        console.error("Modal overlay not found")
+        // Even if modal is not found, try to update the transcription
+        this.transcriptionSectionTarget.classList.remove("hidden")
+        this.transcriptionTextTarget.textContent = this.transcriptBuffer + interimTranscript
+      }
     }
 
     recognition.onerror = (event) => {
@@ -155,6 +234,16 @@ export default class extends Controller {
         if (data.redirect_url) {
           window.location.href = data.redirect_url
         } else {
+          // First ensure the modal is visible
+          const modalOverlay = document.querySelector('#transaction-form-modal')
+          if (modalOverlay) {
+            modalOverlay.classList.remove("hidden")
+          } else {
+            console.error("Modal overlay not found")
+          }
+          
+          // Hide the transcription section and show the preview section
+          this.transcriptionSectionTarget.classList.add("hidden")
           this.fillTransactionPreview(data.transaction_data)
           this.previewSectionTarget.classList.remove("hidden")
         }
